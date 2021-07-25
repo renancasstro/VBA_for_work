@@ -1,17 +1,40 @@
 Option Explicit
 
-Public arr
 Public arAlone
+Public arOIT
 Public Index As Integer
+Public plan As String
 
 Sub AG()
 
-arr = Array("Alone", "OiT", "Fibra")
+plan = "Alone"
 arAlone = Array("11", "12", "19", "20")
 
 If Index < 4 Then
     Windows("Análise Gráfica_v4.xlsm").Activate
-    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets("Alone").Range("AB" & arAlone(Index)).Copy
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range("AB" & arAlone(Index)).Copy
+    
+    SendKeys "^+S"
+    SendKeys "^V"
+    SendKeys "~"
+
+    Index = Index + 1
+    
+    Application.OnTime Now + TimeValue("00:00:05"), "Copy"
+Else
+    Index = 0
+    plan = "OiT"
+    Application.OnTime Now + TimeValue("00:00:05"), "OIT"
+End If
+
+End Sub
+Sub OIT()
+
+arOIT = Array("4", "5", "6", "7", "8", "9", "18", "19", "25", "26")
+
+If Index < 10 Then
+    Windows("Análise Gráfica_v4.xlsm").Activate
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range("AB" & arOIT(Index)).Copy
     
     SendKeys "^+S"
     SendKeys "^V"
@@ -32,13 +55,24 @@ Dim num As Double
 Dim coluna As String
 Dim ano As Integer
 
-Windows("Análise Gráfica_v4.xlsm").Activate
-coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("O8")
-ano = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("P8")
-num = Range(coluna & ano)
-coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("Q8")
-Workbooks("Forecast_Operacional_v6.xlsx").Worksheets("Alone").Range(coluna & arAlone((Index - 1))) = num
+If plan = "Alone" Then
+    Windows("Análise Gráfica_v4.xlsm").Activate
+    coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("O8")
+    ano = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("P8")
+    num = Range(coluna & ano)
+    coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("Q8")
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range(coluna & arAlone((Index - 1))) = num
+    Application.OnTime Now, "AG"
+End If
 
-Application.OnTime Now, "AG"
+If plan = "OiT" Then
+    Windows("Análise Gráfica_v4.xlsm").Activate
+    coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("O8")
+    ano = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("P8")
+    num = Range(coluna & ano)
+    coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("Q8")
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range(coluna & arOIT((Index - 1))) = num
+    Application.OnTime Now, "OIT"
+End If
 
 End Sub
