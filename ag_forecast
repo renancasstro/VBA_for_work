@@ -1,18 +1,17 @@
 Option Explicit
 
-Public arAlone
-Public arOIT
+Public arr
 Public Index As Integer
 Public plan As String
 
 Sub AG()
 
 plan = "Alone"
-arAlone = Array("11", "12", "19", "20")
+arr = Array("11", "12", "19", "20")
 
 If Index < 4 Then
     Windows("Análise Gráfica_v4.xlsm").Activate
-    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range("AB" & arAlone(Index)).Copy
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range("AB" & arr(Index)).Copy
     
     SendKeys "^+S"
     SendKeys "^V"
@@ -30,11 +29,33 @@ End If
 End Sub
 Sub OIT()
 
-arOIT = Array("4", "5", "6", "7", "8", "9", "18", "19", "25", "26")
+arr = Array("4", "5", "6", "7", "8", "9", "18", "19", "25", "26")
 
 If Index < 10 Then
     Windows("Análise Gráfica_v4.xlsm").Activate
-    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range("AB" & arOIT(Index)).Copy
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range("AB" & arr(Index)).Copy
+    
+    SendKeys "^+S"
+    SendKeys "^V"
+    SendKeys "~"
+
+    Index = Index + 1
+    
+    Application.OnTime Now + TimeValue("00:00:05"), "Copy"
+Else
+    Index = 0
+    plan = "Fibra"
+    Application.OnTime Now + TimeValue("00:00:05"), "Fibra"
+End If
+
+End Sub
+Sub Fibra()
+
+arr = Array("4", "6", "7", "8")
+
+If Index < 4 Then
+    Windows("Análise Gráfica_v4.xlsm").Activate
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range("AB" & arr(Index)).Copy
     
     SendKeys "^+S"
     SendKeys "^V"
@@ -61,7 +82,7 @@ If plan = "Alone" Then
     ano = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("P8")
     num = Range(coluna & ano)
     coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("Q8")
-    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range(coluna & arAlone((Index - 1))) = num
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range(coluna & arr((Index - 1))) = num
     Application.OnTime Now, "AG"
 End If
 
@@ -71,8 +92,18 @@ If plan = "OiT" Then
     ano = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("P8")
     num = Range(coluna & ano)
     coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("Q8")
-    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range(coluna & arOIT((Index - 1))) = num
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range(coluna & arr((Index - 1))) = num
     Application.OnTime Now, "OIT"
+End If
+
+If plan = "Fibra" Then
+    Windows("Análise Gráfica_v4.xlsm").Activate
+    coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("O8")
+    ano = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("P8")
+    num = Range(coluna & ano)
+    coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("Q8")
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range(coluna & arr((Index - 1))) = num
+    Application.OnTime Now, "Fibra"
 End If
 
 End Sub
