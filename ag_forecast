@@ -18,7 +18,8 @@ If Index < 4 Then
     'Esse comando indica a planilha que receberá os próximos comandos'
     Windows("Análise Gráfica_v4.xlsm").Activate
     'Foi necessário utilizar o comando Copy ao invés de alocar o valor numa variável,'
-    'já que como não é possível acessar o VBA do AG, só é possível inserir as chaves Copiando e Colando'
+    'já que como não é possível acessar o VBA do AG, só é possível inserir as chaves'
+    'no formulário Copiando e Colando'
     Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range("AB" & arr(Index)).Copy
     
     'Como a planilha do AG possui VBA bloqueado, a consulta deve ser feita por Sendkeys'
@@ -101,14 +102,22 @@ Dim ano As Integer
 'Sempre que a Sub Copy for chamada, o If vai indicar a aba que está rodando'
 If plan = "Alone" Then
     Windows("Análise Gráfica_v4.xlsm").Activate
+    'Indicador de linha e coluna para capturar o número no AG'
     coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("O8")
     ano = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("P8")
+    'A variável num receberá o valor numérico contido no mês e ano correspondentes'
     num = Range(coluna & ano)
+    'Indicador de coluna para orientar qual é o mês correspondente na planilha do Forecast'
     coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("Q8")
+    'A linha e coluna correspondentes da planilha Forecast receberá o valor numérico contido'
+    'na variável num. Note que o Index está subtraído em -1, porque eu optei por deixar o contador'
+    'somando +1 em outra Sub (AG, OiT, Fibra). Se não substrair, o próximo comando vai inserir o' 
+    'valor numérico no próximo elemento do vetor, ou seja, numa linha mais abaixo da que realmente é'
     Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range(coluna & arr((Index - 1))) = num
     Application.OnTime Now, "AG"
 End If
 
+'É a mesma coisa explicada acima, mas pra outras abas'
 If plan = "OiT" Then
     Windows("Análise Gráfica_v4.xlsm").Activate
     coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("O8")
