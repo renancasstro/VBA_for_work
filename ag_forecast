@@ -1,9 +1,9 @@
 Option Explicit
 
 'É necessário declarar essas variáveis como Globais para que sejam lidas pelo módulo inteiro do VBA'
-Public arr
-Public Index As Integer
-Public plan As String
+Dim arr
+Dim Index As Integer
+Dim plan As String
 
 Sub AG()
 
