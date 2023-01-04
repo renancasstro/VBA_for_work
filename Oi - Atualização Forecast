@@ -1,0 +1,141 @@
+Option Explicit
+
+'É necessário declarar essas variáveis como Globais para que sejam lidas pelo módulo inteiro do VBA'
+Dim arr
+Dim Index As Integer
+Dim plan As String
+
+Sub AG()
+
+'A variável plan vai se alterar durante o código para que indique a aba que rceberá os dados do AG'
+plan = "Alone"
+
+'A variável arr irá se alterar para cada aba porque indica a linha das chaves do AG na planilha do Forecast'
+arr = Array("11", "12", "19", "20")
+
+'Essa condicional garante que o código faça a varredura da variável arr'
+If Index < 4 Then
+    'Esse comando indica a planilha que receberá os próximos comandos'
+    Windows("Análise Gráfica_v4.xlsm").Activate
+    'Foi necessário utilizar o comando Copy ao invés de alocar o valor numa variável,'
+    'já que como não é possível acessar o VBA do AG, só é possível inserir as chaves'
+    'no formulário Copiando e Colando'
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range("AB" & arr(Index)).Copy
+    
+    'Como a planilha do AG possui VBA bloqueado, a consulta deve ser feita por Sendkeys'
+    'Ctrl + Shit + S'
+    SendKeys "^+S"
+    'Sim, isso é um Ctrl + V'
+    SendKeys "^V"
+    'Enter'
+    SendKeys "~"
+    
+    'Contador de varredura'
+    Index = Index + 1
+    
+    'É preciso dar tempo e espaço para o VBA do AG rodar, por isso se deve finalizar essa macro, inserindo outra na fila'
+    Application.OnTime Now + TimeValue("00:00:05"), "Copy"
+Else
+    'Daqui reiniciamos o contador de varredura'
+    Index = 0
+    'Redefinimos a variável plan para outra aba'
+    plan = "OiT"
+    'Por segurança, a transição entre Macros é feita da forma usual'
+    Application.OnTime Now + TimeValue("00:00:05"), "OIT"
+End If
+
+End Sub
+Sub OIT()
+
+'As linhas da chave na planilha do Forecast, na aba OiT'
+arr = Array("4", "5", "6", "7", "8", "9", "18", "19", "25", "26")
+
+'O número da varredura aumenta, visto que agora arr é um vetor com 10 inputs'
+If Index < 10 Then
+    Windows("Análise Gráfica_v4.xlsm").Activate
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range("AB" & arr(Index)).Copy
+    
+    SendKeys "^+S"
+    SendKeys "^V"
+    SendKeys "~"
+
+    Index = Index + 1
+    
+    Application.OnTime Now + TimeValue("00:00:05"), "Copy"
+Else
+    Index = 0
+    plan = "Fibra"
+    Application.OnTime Now + TimeValue("00:00:05"), "Fibra"
+End If
+
+End Sub
+Sub Fibra()
+
+'A Sub Fibra é mais do mesmo que já vimos nos códigos acima'
+arr = Array("4", "6", "7", "8")
+
+If Index < 4 Then
+    Windows("Análise Gráfica_v4.xlsm").Activate
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range("AB" & arr(Index)).Copy
+    
+    SendKeys "^+S"
+    SendKeys "^V"
+    SendKeys "~"
+
+    Index = Index + 1
+    
+    Application.OnTime Now + TimeValue("00:00:05"), "Copy"
+Else
+    'O contador deve ser reiniciado ao fim do código para permitir que, caso necessário, se rode novamente'
+    Index = 0
+    'Sempre escreva uma mensagem, senão a pessoa que não conhece o código não terá como saber quando o código terminou'
+    MsgBox "Parabéns! Sua automação terminou com sucesso!"
+End If
+
+End Sub
+Sub Copy()
+
+Dim num As Double
+Dim coluna As String
+Dim ano As Integer
+
+'Sempre que a Sub Copy for chamada, o If vai indicar a aba que está rodando'
+If plan = "Alone" Then
+    Windows("Análise Gráfica_v4.xlsm").Activate
+    'Indicador de linha e coluna para capturar o número no AG'
+    coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("O13")
+    ano = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("P13")
+    'A variável num receberá o valor numérico contido no mês e ano correspondentes'
+    num = Range(coluna & ano)
+    'Indicador de coluna para orientar qual é o mês correspondente na planilha do Forecast'
+    coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("Q13")
+    'A linha e coluna correspondentes da planilha Forecast receberá o valor numérico contido'
+    'na variável num. Note que o Index está subtraído em -1, porque eu optei por deixar o contador'
+    'somando +1 em outra Sub (AG, OiT, Fibra). Se não substrair, o próximo comando vai inserir o' 
+    'valor numérico no próximo elemento do vetor, ou seja, numa linha mais abaixo da que realmente é'
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range(coluna & arr((Index - 1))) = num
+    Application.OnTime Now, "AG"
+End If
+
+'É a mesma coisa explicada acima, mas pra outras abas'
+If plan = "OiT" Then
+    Windows("Análise Gráfica_v4.xlsm").Activate
+    coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("O13")
+    ano = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("P13")
+    num = Range(coluna & ano)
+    coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("Q13")
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range(coluna & arr((Index - 1))) = num
+    Application.OnTime Now, "OIT"
+End If
+
+If plan = "Fibra" Then
+    Windows("Análise Gráfica_v4.xlsm").Activate
+    coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("O13")
+    ano = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("P13")
+    num = Range(coluna & ano)
+    coluna = Workbooks("Planilha de Automação.xlsm").Worksheets("Automações").Range("Q13")
+    Workbooks("Forecast_Operacional_v6.xlsx").Worksheets(plan).Range(coluna & arr((Index - 1))) = num
+    Application.OnTime Now, "Fibra"
+End If
+
+End Sub
